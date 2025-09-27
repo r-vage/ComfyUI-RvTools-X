@@ -1,0 +1,234 @@
+# License: GNU General Public License v3.0
+#
+# This file is part of ComfyUI-RvTools-X and is licensed under the GNU General Public License v3.0.
+# See LICENSE file or <https://www.gnu.org/licenses/> for details.
+
+import comfy
+class AnyType(str):
+    # A special class that is always equal in not-equal comparisons. Credit to pythongosssss
+
+    def __eq__(self, _) -> bool:
+        return True
+
+    def __ne__(self, __value: object) -> bool:
+        return False
+  
+class cstr(str):
+    class color:
+        END = '\x1b[0m'
+        BOLD = '\x1b[1m'
+        ITALIC = '\x1b[3m'
+        UNDERLINE = '\x1b[4m'
+        BLINK = '\x1b[5m'
+        BLINK2 = '\x1b[6m'
+        SELECTED = '\x1b[7m'
+
+        BLACK = '\x1b[30m'
+        RED = '\x1b[31m'
+        GREEN = '\x1b[32m'
+        YELLOW = '\x1b[33m'
+        BLUE = '\x1b[34m'
+        VIOLET = '\x1b[35m'
+        BEIGE = '\x1b[36m'
+        WHITE = '\x1b[37m'
+
+        BLACKBG = '\x1b[40m'
+        REDBG = '\x1b[41m'
+        GREENBG = '\x1b[42m'
+        YELLOWBG = '\x1b[43m'
+        BLUEBG = '\x1b[44m'
+        VIOLETBG = '\x1b[45m'
+        BEIGEBG = '\x1b[46m'
+        WHITEBG = '\x1b[47m'
+
+        GREY = '\x1b[90m'
+        LIGHTRED = '\x1b[91m'
+        LIGHTGREEN = '\x1b[92m'
+        LIGHTYELLOW = '\x1b[93m'
+        LIGHTBLUE = '\x1b[94m'
+        LIGHTVIOLET = '\x1b[95m'
+        LIGHTBEIGE = '\x1b[96m'
+        LIGHTWHITE = '\x1b[97m'
+
+        GREYBG = '\x1b[100m'
+        LIGHTREDBG = '\x1b[101m'
+        LIGHTGREENBG = '\x1b[102m'
+        LIGHTYELLOWBG = '\x1b[103m'
+        LIGHTBLUEBG = '\x1b[104m'
+        LIGHTVIOLETBG = '\x1b[105m'
+        LIGHTBEIGEBG = '\x1b[106m'
+        LIGHTWHITEBG = '\x1b[107m'
+
+        @staticmethod
+        def add_code(name: str, code: str):
+#             Add a custom color code at runtime.
+#
+#             Raises ValueError if the code name already exists.
+#
+            key = name.upper()
+            if not hasattr(cstr.color, key):
+                setattr(cstr.color, key, code)
+            else:
+                raise ValueError(f"'cstr' object already contains a code with the name '{name}'.")
+
+    def __new__(cls, text):
+        return super().__new__(cls, text)
+
+    def __getattr__(self, attr: str):
+#         Support attribute-based colorization and class-level access.
+#
+#         Examples:
+#           cstr('hello').RED  -> wraps with RED/END
+#           cstr('foo __NAME__')._cstrNAME  -> replaces __NAME__ with the code
+#
+        # Handle literal placeholder prefix '_cstr' (exact prefix)
+        try:
+            if attr.startswith("_cstr"):
+                code_name = attr[len("_cstr") :].upper()
+                code = getattr(self.color, code_name, None)
+                if code is None:
+                    raise AttributeError(f"color code '{code_name}' not found")
+                modified_text = self.replace(f"__{code_name}__", f"{code}")
+                return cstr(modified_text)
+
+            # Direct color attribute (e.g. .RED)
+            code = getattr(self.color, attr.upper(), None)
+            if code is not None:
+                modified_text = f"{code}{self}{self.color.END}"
+                return cstr(modified_text)
+
+            # Expose class-level helpers (if any)
+            if hasattr(cstr, attr):
+                return getattr(cstr, attr)
+        except AttributeError:
+            # Mirror normal attribute error semantics
+            pass
+        raise AttributeError(f"'cstr' object has no attribute '{attr}'")
+
+    def print(self, **kwargs):
+        print(self, **kwargs)
+
+
+def purge_vram() -> None:
+    """Central helper to purge VRAM and unload models safely.
+
+    Use this from nodes instead of duplicating the try/except import and
+    GC/CUDA/model unload sequence. Any exception is reported via the
+    project's cstr warning helper so callers don't need to duplicate
+    error handling.
+    """
+    try:
+        import gc
+        try:
+            import torch
+        except Exception:
+            torch = None
+
+        try:
+            import comfy.model_management
+        except Exception:
+            comfy = None
+
+        gc.collect()
+        if torch is not None:
+            try:
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                    torch.cuda.ipc_collect()
+            except Exception:
+                # Ignore CUDA-specific failures
+                pass
+
+        if comfy is not None:
+            try:
+                comfy.model_management.unload_all_models()
+                comfy.model_management.soft_empty_cache()
+            except Exception:
+                # Ignore model-management failures
+                pass
+    except Exception as e:
+        try:
+            cstr(f"VRAM purge failed: {e}").warning.print()
+        except Exception:
+            try:
+                print(f"VRAM purge failed: {e}")
+            except Exception:
+                pass
+
+# Resolution presets and mappings for image generation
+RESOLUTION_PRESETS = [
+    "Custom",
+    "512x512 (1:1)",
+    "512x682 (3:4)",
+    "512x768 (2:3)",
+    "512x910 (9:16)",
+    "512x952 (1:1.85)",
+    "512x1024 (1:2)",
+    "512x1224 (1:2.39)",
+    "640x1536 (9:21)",
+    "768x1280 (3:5 Flux)",
+    "768x1344 (9:16 HiDream)",
+    "832x1216 (2:3 Flux, SDXL)",
+    "832x1408 (1:1.692 HiDream)",
+    "896x1152 (3:4)",
+    "896x1536 (7:12 HiDream)",
+    "1024x1024 (1:1)",
+    "1024x1536 (2:3 Flux, Qwen)",
+    "1024x2048 (1:2 Qwen)",
+    "1152x896 (4:3)",
+    "682x512 (4:3)",
+    "768x512 (3:2)",
+    "910x512 (16:9)",
+    "952x512 (1.85:1)",
+    "1024x512 (2:1)",
+    "1224x512 (2.39:1)",
+    "1536x640 (21:9)",
+    "1280x768 (5:3 Flux)",
+    "1344x768 (16:9 HiDream)",
+    "1216x832 (3:2 Flux, SDXL)",
+    "1408x832 (1.692:1 HiDream)",
+    "1536x896 (12:7 HiDream)",
+    "1536x1024 (3:2 Flux, Qwen)",
+    "2048x1024 (2:1 Qwen)",
+]
+
+RESOLUTION_MAP = {
+    "512x512 (1:1)": (512, 512),
+    "512x682 (3:4)": (512, 682),
+    "512x768 (2:3)": (512, 768),
+    "512x910 (9:16)": (512, 910),
+    "512x952 (1:1.85)": (512, 952),
+    "512x1024 (1:2)": (512, 1024),
+    "512x1224 (1:2.39)": (512, 1224),
+    "640x1536 (9:21)": (640, 1536),
+    "768x1280 (3:5 Flux)": (768, 1280),
+    "768x1344 (9:16 HiDream)": (768, 1344),
+    "832x1216 (2:3 Flux, SDXL)": (832, 1216),
+    "832x1408 (1:1.692 HiDream)": (832, 1408),
+    "896x1152 (3:4)": (896, 1152),
+    "896x1536 (7:12 HiDream)": (896, 1536),
+    "1024x1024 (1:1)": (1024, 1024),
+    "1024x1536 (2:3 Flux, Qwen)": (1024, 1536),
+    "1024x2048 (1:2 Qwen)": (1024, 2048),
+    "1152x896 (4:3)": (1152, 896),
+    "682x512 (4:3)": (682, 512),
+    "768x512 (3:2)": (768, 512),
+    "910x512 (16:9)": (910, 512),
+    "952x512 (1.85:1)": (952, 512),
+    "1024x512 (2:1)": (1024, 512),
+    "1224x512 (2.39:1)": (1224, 512),
+    "1536x640 (21:9)": (1536, 640),
+    "1280x768 (5:3 Flux)": (1280, 768),
+    "1344x768 (16:9 HiDream)": (1344, 768),
+    "1216x832 (3:2 Flux, SDXL)": (1216, 832),
+    "1408x832 (1.692:1 HiDream)": (1408, 832),
+    "1536x896 (12:7 HiDream)": (1536, 896),
+    "1536x1024 (3:2 Flux, Qwen)": (1536, 1024),
+    "2048x1024 (2:1 Qwen)": (2048, 1024),
+}
+
+# Sampler and scheduler lists for ComfyUI
+SAMPLERS_COMFY = comfy.samplers.KSampler.SAMPLERS
+SCHEDULERS_ANY = comfy.samplers.KSampler.SCHEDULERS + [
+    'AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'OSS FLUX', 'OSS Wan', 'OSS Chroma', 'simple_test'
+]

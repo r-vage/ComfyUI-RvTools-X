@@ -1,0 +1,50 @@
+# License: GNU General Public License v3.0
+#
+# This file is part of ComfyUI-RvTools-X and is licensed under the GNU General Public License v3.0.
+# See LICENSE file or <https://www.gnu.org/licenses/> for details.
+
+import comfy
+from ..core import CATEGORY, cstr, purge_vram
+from ..core import AnyType
+from typing import Any, Dict, Tuple
+
+any = AnyType("*")
+
+class RvSwitch_Sampler:
+    CATEGORY = CATEGORY.MAIN.value + CATEGORY.SWITCHES.value
+    RETURN_TYPES = (comfy.samplers.KSampler.SAMPLERS,)
+    RETURN_NAMES = ("sampler_name",)
+    FUNCTION = "execute"
+
+    @classmethod
+    def INPUT_TYPES(cls) -> Dict[str, Any]:
+        return {
+            "required": {
+                "Input": ("INT", {"default": 1, "min": 1, "max": 2, "tooltip": "Select which sampler input to output (1 or 2)."}),
+                "Purge_VRAM": ("BOOLEAN", {"default": False, "tooltip": "If True, purges VRAM before switching."}),
+            },
+            "optional": {
+                "input1": (any, {"default": [], "forceInput": True, "tooltip": "First sampler input."}),
+                "input2": (any, {"default": [], "forceInput": True, "tooltip": "Second sampler input."}),
+            }
+        }
+
+    def execute(self, Input: int, Purge_VRAM: bool, input1: Any = None, input2: Any = None) -> Tuple[Any]:
+        if Purge_VRAM:
+            purge_vram()    
+
+        if Input == 1:
+            return (input1,)
+        else:
+            return (input2,)
+
+NODE_NAME = 'Sampler Switch [RvTools-X]'
+NODE_DESC = 'Sampler Switch'
+
+NODE_CLASS_MAPPINGS = {
+   NODE_NAME: RvSwitch_Sampler
+}
+
+NODE_DISPLAY_NAME_MAPPINGS = {
+    NODE_NAME: NODE_DESC
+}

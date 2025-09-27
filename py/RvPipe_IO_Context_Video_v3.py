@@ -20,9 +20,16 @@ _all_context_input_output_data = {
     "negative": ("negative", "CONDITIONING", "negative"),
     "latent": ("latent", "LATENT", "latent"),
 
-    "images": ("images", "IMAGE", "images"),
-    "mask": ("mask", "MASK", "mask"),
-
+    "images_input": ("images_input", "IMAGE", "images_input"),
+    "images_ref_start": ("images_ref_start", "IMAGE", "images_ref_start"),
+    "images_ref_end": ("images_ref_end", "IMAGE", "images_ref_end"),
+    "images_output": ("images_output", "IMAGE", "images_output"),
+    "images_pp1": ("images_pp1", "IMAGE", "images_pp1"),
+    "images_pp2": ("images_pp2", "IMAGE", "images_pp2"),
+    "images_pp3": ("images_pp3", "IMAGE", "images_pp3"),
+    "mask_1": ("mask_1", "MASK", "mask_1"),
+    "mask_2": ("mask_2", "MASK", "mask_2"),
+    
     "sampler": ("sampler", any, "sampler"),
     "scheduler": ("scheduler", any, "scheduler"),
     "steps": ("steps", "INT", "steps"),
@@ -39,9 +46,14 @@ _all_context_input_output_data = {
     "frame_load_cap": ("frame_load_cap", "INT", "frame_load_cap"),
     "skip_first_frames": ("skip_first_frames", "INT", "skip_first_frames"),
     "select_every_nth": ("select_every_nth", "INT", "select_every_nth"),
-    "audio": ("audio", "AUDIO", "audio"),
+    "audio_in": ("audio_in", "AUDIO", "audio_in"),
+    "audio_out": ("audio_out", "AUDIO", "audio_out"),
 
     "any_1": ("any_1", any, "any_1"),
+    "any_2": ("any_2", any, "any_2"),
+    "any_3": ("any_3", any, "any_3"),
+    "any_4": ("any_4", any, "any_4"),
+    "any_5": ("any_5", any, "any_5"),
 
     "path": ("path", "STRING", "path"),
 }
@@ -108,7 +120,7 @@ def get_context_return_tuple(ctx, inputs_list=None):
         tup_list.append(ctx.get(key, None))
     return tuple(tup_list)
 
-class RvPipe_IO_Context_Video:
+class RvPipe_IO_Context_Video_v3:
     # Node class for passing through a context for general workflows.
     def __init__(self):
         pass
@@ -132,11 +144,11 @@ class RvPipe_IO_Context_Video:
         # Return the updated pipe and all individual values
         return get_context_return_tuple(ctx)
 
-NODE_NAME = 'Context Video [RvTools-X]'
-NODE_DESC = 'Context Video'
+NODE_NAME = 'Context Video v3 [RvTools-X]'
+NODE_DESC = 'Context Video v3'
 
 NODE_CLASS_MAPPINGS = {
-    NODE_NAME: RvPipe_IO_Context_Video
+    NODE_NAME: RvPipe_IO_Context_Video_v3
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {

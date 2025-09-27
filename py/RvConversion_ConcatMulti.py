@@ -28,7 +28,24 @@ class RvConversion_ConcatMulti:
     DESCRIPTION = "Merge multiple pipe/context inputs into a single context dict pipe."
 
     # keys that should be treated as list-like when merging
-    _KNOWN_LIST_KEYS = {"images", "images_pp", "mask", "lora_names", "loras", "embeddings", "positive_list", "negative_list"}
+    _KNOWN_LIST_KEYS = {
+        "images", 
+        "images_ref", 
+        "images_pp", 
+        "images_pp1",
+        "images_pp2", 
+        "images_pp3",
+        "mask", 
+        "mask_1", 
+        "mask_2", 
+        "audio_in",
+        "audio_out",
+        "lora_names", 
+        "loras", 
+        "embeddings", 
+        "positive_list", 
+        "negative_list"
+    }
 
     def concat(self, inputcount: int = 2, merge_strategy: str = "merge", **kwargs) -> tuple:
         result: Dict[str, Any] = {}

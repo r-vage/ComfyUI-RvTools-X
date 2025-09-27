@@ -20,9 +20,13 @@ _all_context_input_output_data = {
     "negative": ("negative", "CONDITIONING", "negative"),
     "latent": ("latent", "LATENT", "latent"),
 
-    "images": ("images", "IMAGE", "images"),
-    "mask": ("mask", "MASK", "mask"),
-
+    "images_input": ("images_input", "IMAGE", "images_input"),
+    "images_ref_start": ("images_ref_start", "IMAGE", "images_ref_start"),
+    "images_ref_end": ("images_ref_end", "IMAGE", "images_ref_end"),
+    "images_output": ("images_output", "IMAGE", "images_output"),
+    "mask_1": ("mask_1", "MASK", "mask_1"),
+    "mask_2": ("mask_2", "MASK", "mask_2"),
+    
     "sampler": ("sampler", any, "sampler"),
     "scheduler": ("scheduler", any, "scheduler"),
     "steps": ("steps", "INT", "steps"),
@@ -108,7 +112,7 @@ def get_context_return_tuple(ctx, inputs_list=None):
         tup_list.append(ctx.get(key, None))
     return tuple(tup_list)
 
-class RvPipe_IO_Context_Video:
+class RvPipe_IO_Context_Video_v2:
     # Node class for passing through a context for general workflows.
     def __init__(self):
         pass
@@ -132,11 +136,11 @@ class RvPipe_IO_Context_Video:
         # Return the updated pipe and all individual values
         return get_context_return_tuple(ctx)
 
-NODE_NAME = 'Context Video [RvTools-X]'
-NODE_DESC = 'Context Video'
+NODE_NAME = 'Context Video v2 [RvTools-X]'
+NODE_DESC = 'Context Video v2'
 
 NODE_CLASS_MAPPINGS = {
-    NODE_NAME: RvPipe_IO_Context_Video
+    NODE_NAME: RvPipe_IO_Context_Video_v2
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {

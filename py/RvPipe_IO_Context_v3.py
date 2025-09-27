@@ -21,28 +21,36 @@ _all_context_input_output_data = {
     "latent": ("latent", "LATENT", "latent"),
 
     "images": ("images", "IMAGE", "images"),
-    "mask": ("mask", "MASK", "mask"),
-
+    "images_ref": ("images_ref", "IMAGE", "images_ref"),
+    "images_pp": ("images_pp", "IMAGE", "images_pp"),
+    "mask_1": ("mask_1", "MASK", "mask_1"),
+    "mask_2": ("mask_2", "MASK", "mask_2"),
+    
     "sampler": ("sampler", any, "sampler"),
     "scheduler": ("scheduler", any, "scheduler"),
     "steps": ("steps", "INT", "steps"),
     "cfg": ("cfg", "FLOAT", "cfg"),
     "guidance": ("guidance", "FLOAT", "guidance"),
     "denoise": ("denoise", "FLOAT", "denoise"),
+    "clip_skip": ("clip_skip", "INT", "clip_skip"),
     "seed": ("seed", "INT", "seed"),
     "width": ("width", "INT", "width"),
     "height": ("height", "INT", "height"),
+    "batch_size": ("batch_size", "INT", "batch_size"),
+    
     "text_pos": ("text_pos", "STRING", "text_pos"),
+    "text_pos_i2p": ("text_pos_i2p", "STRING", "text_pos_i2p"),
     "text_neg": ("text_neg", "STRING", "text_neg"),
 
-    "frame_rate": ("frame_rate", "FLOAT", "frame_rate"),
-    "frame_load_cap": ("frame_load_cap", "INT", "frame_load_cap"),
-    "skip_first_frames": ("skip_first_frames", "INT", "skip_first_frames"),
-    "select_every_nth": ("select_every_nth", "INT", "select_every_nth"),
-    "audio": ("audio", "AUDIO", "audio"),
-
     "any_1": ("any_1", any, "any_1"),
+    "any_2": ("any_2", any, "any_2"),
+    "any_3": ("any_3", any, "any_3"),
+    "any_4": ("any_4", any, "any_4"),
+    "any_5": ("any_5", any, "any_5"),
 
+    "model_name": ("model_name", "STRING", "model_name"),
+    "vae_name": ("vae_name", "STRING", "vae_name"),
+    "lora_names": ("lora_names", "STRING", "lora_names"),
     "path": ("path", "STRING", "path"),
 }
 
@@ -108,7 +116,7 @@ def get_context_return_tuple(ctx, inputs_list=None):
         tup_list.append(ctx.get(key, None))
     return tuple(tup_list)
 
-class RvPipe_IO_Context_Video:
+class RvPipe_IO_Context_v3:
     # Node class for passing through a context for general workflows.
     def __init__(self):
         pass
@@ -132,11 +140,11 @@ class RvPipe_IO_Context_Video:
         # Return the updated pipe and all individual values
         return get_context_return_tuple(ctx)
 
-NODE_NAME = 'Context Video [RvTools-X]'
-NODE_DESC = 'Context Video'
+NODE_NAME = 'Context v3 [RvTools-X]'
+NODE_DESC = 'Context v3'
 
 NODE_CLASS_MAPPINGS = {
-    NODE_NAME: RvPipe_IO_Context_Video
+    NODE_NAME: RvPipe_IO_Context_v3
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {

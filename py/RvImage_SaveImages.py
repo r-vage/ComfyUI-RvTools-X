@@ -461,7 +461,7 @@ def parse_lora_string(lora_input):
         return (''.join(tokens), weights)
 
     # Otherwise, accept comma or whitespace separated lists like 'a:0.8,b' or 'a b'
-    parts = [p.strip() for p in re.split('[,;\s]+', str(lora_input)) if p.strip()]
+    parts = [p.strip() for p in re.split(r'[,;\s]+', str(lora_input)) if p.strip()]
     for part in parts:
         if ':' in part:
             name, w = part.split(':', 1)
@@ -773,7 +773,6 @@ class RvImage_SaveImages:
             negative = _prompt_to_str(negative) if negative not in (None, '', 'undefined', 'none') else ""
 
             model_string = {}
-            basemodelname = ''
             modelhash = ""
             vae_hash = ""
 
@@ -793,33 +792,44 @@ class RvImage_SaveImages:
                             pattern = os.path.join(search_dir, '**', model if model.lower().endswith(ext) else model + ext)
                             matches = glob.glob(pattern, recursive=True)
                             if matches:
-                                return matches[0]
+                                return matches[0], search_dir  # Return both path and directory
                     if os.path.exists(model):
-                        return model
+                        return model, None
                     for ext in extensions:
                         candidate = model if model.lower().endswith(ext) else model + ext
                         if os.path.exists(candidate):
-                            return candidate
-                    return None
+                            return candidate, None
+                    return None, None
 
                 search_dirs = []
                 for key in ["checkpoints", "diffusion_models", "unet", "upscale_models"]:
                     search_dirs.extend(folder_paths.get_folder_paths(key))
-                extensions = ['.safetensors', '.pt', '.ckpt', '.bin', '.gguf']
+                extensions = ['.safetensors', '.pt', '.pth', '.ckpt', '.bin', '.gguf']
+
+                # Get upscale model directories for accurate detection
+                upscale_model_dirs = set(folder_paths.get_folder_paths("upscale_models"))
 
                 for model in models:
                     if not model in (None, '', 'undefined', 'none'):
-                        model_path = find_model_file(model, search_dirs, extensions)
+                        model_path, model_dir = find_model_file(model, search_dirs, extensions)
                         modelhash = None
                         if model_path and os.path.exists(model_path):
                             modelhash = get_sha256(model_path)
                             if modelhash:
                                 modelhash = modelhash[:10]
                         else:
-                            cstr(f"Model file not found for hash: {model}").warning.print()
+                            cstr(f"Model file not found for hash: {model} (path: {model_path}, dir: {model_dir})").warning.print()
                         if modelhash not in (None, '', 'undefined', 'none'):
-                            basemodelname = civitai_model_key_name(return_filename_without_extension(model))
-                            model_string[basemodelname] = modelhash
+                            # Determine key format based on model type
+                            if model_dir and model_dir in upscale_model_dirs:
+                                # Upscale models use filename without extension as key
+                                model_key = return_filename_without_extension(model)
+                                cstr(f"Processing upscale model: {model} -> key: {model_key}, hash: {modelhash}").debug.print()
+                            else:
+                                # Checkpoints/diffusion models use Civitai format
+                                model_key = civitai_model_key_name(return_filename_without_extension(model))
+                                cstr(f"Processing checkpoint model: {model} -> key: {model_key}, hash: {modelhash}").debug.print()
+                            model_string[model_key] = modelhash
 
             if not vae_name in (None, '', 'undefined', 'none'):
                 models = vae_name.split(', ')

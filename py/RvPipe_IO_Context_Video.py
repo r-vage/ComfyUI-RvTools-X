@@ -23,6 +23,10 @@ _all_context_input_output_data = {
     "images": ("images", "IMAGE", "images"),
     "mask": ("mask", "MASK", "mask"),
 
+
+
+
+
     "sampler": ("sampler", any, "sampler"),
     "scheduler": ("scheduler", any, "scheduler"),
     "steps": ("steps", "INT", "steps"),

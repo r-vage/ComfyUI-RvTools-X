@@ -13,44 +13,54 @@ any = AnyType("*")
 # original code is taken from rgthree context utils
 _all_context_input_output_data = {
     "pipe": ("pipe", "pipe", "context"),
-    "model": ("model", "MODEL", "model"),
-    "clip": ("clip", "CLIP", "clip"),
-    "vae": ("vae", "VAE", "vae"),
+    "model": ("model", "WANVIDEOMODEL", "model"),
+    "clip": ("clip", "WANTEXTENCODER", "clip"),
+    "vae": ("vae", "WANVAE", "vae"),
     "positive": ("positive", "CONDITIONING", "positive"),
     "negative": ("negative", "CONDITIONING", "negative"),
     "latent": ("latent", "LATENT", "latent"),
-
-    "images": ("images", "IMAGE", "images"),
-    "images_ref": ("images_ref", "IMAGE", "images_ref"),
-    "images_pp": ("images_pp", "IMAGE", "images_pp"),
+    
+    "images_input": ("images_input", "IMAGE", "images_input"),
+    "images_ref_start": ("images_ref_start", "IMAGE", "images_ref_start"),
+    "images_ref_end": ("images_ref_end", "IMAGE", "images_ref_end"),
+    "images_output": ("images_output", "IMAGE", "images_output"),
+    "images_pp1": ("images_pp1", "IMAGE", "images_pp1"),
+    "images_pp2": ("images_pp2", "IMAGE", "images_pp2"),
+    "images_pp3": ("images_pp3", "IMAGE", "images_pp3"),
     "mask_1": ("mask_1", "MASK", "mask_1"),
     "mask_2": ("mask_2", "MASK", "mask_2"),
-
+    
     "sampler": ("sampler", any, "sampler"),
     "scheduler": ("scheduler", any, "scheduler"),
     "steps": ("steps", "INT", "steps"),
     "cfg": ("cfg", "FLOAT", "cfg"),
     "guidance": ("guidance", "FLOAT", "guidance"),
     "denoise": ("denoise", "FLOAT", "denoise"),
-    "clip_skip": ("clip_skip", "INT", "clip_skip"),
     "seed": ("seed", "INT", "seed"),
     "width": ("width", "INT", "width"),
     "height": ("height", "INT", "height"),
-    "batch_size": ("batch_size", "INT", "batch_size"),
-
     "text_pos": ("text_pos", "STRING", "text_pos"),
-    "text_pos_i2p": ("text_pos_i2p", "STRING", "text_pos_i2p"),
     "text_neg": ("text_neg", "STRING", "text_neg"),
 
+    "frame_rate": ("frame_rate", "FLOAT", "frame_rate"),
+    "frame_load_cap": ("frame_load_cap", "INT", "frame_load_cap"),
+    "context_length": ("context_length", "INT", "context_length"),
+    "overlap": ("overlap", "INT", "overlap"),
+    "skip_first_frames": ("skip_first_frames", "INT", "skip_first_frames"),
+    "select_every_nth": ("select_every_nth", "INT", "select_every_nth"),
+    "audio_in": ("audio_in", "AUDIO", "audio_in"),
+    "audio_out": ("audio_out", "AUDIO", "audio_out"),
 
+    "text_embeds": ("text_embeds", "WANVIDEOTEXTEMBEDS", "text_embeds"),
+    "image_embeds": ("image_embeds", "WANVIDIMAGE_EMBEDS", "image_embeds"),
+    "loras": ("loras", "WANVIDLORA", "loras"),
+    "torch_compile_args": ("torch_compile_args", "WANCOMPILEARGS", "torch_compile_args"),
+    "block_swap_args": ("block_swap_args", "BLOCKSWAPARGS", "block_swap_args"),
+    "vram_management_args": ("vram_management_args", "VRAM_MANAGEMENTARGS", "vram_management_args"),    
 
+    "any_1": ("any_1", any, "any_1"),
+    "any_2": ("any_2", any, "any_2"),
 
-
-
-
-    "model_name": ("model_name", "STRING", "model_name"),
-    "vae_name": ("vae_name", "STRING", "vae_name"),
-    "lora_names": ("lora_names", "STRING", "lora_names"),
     "path": ("path", "STRING", "path"),
 }
 
@@ -116,7 +126,7 @@ def get_context_return_tuple(ctx, inputs_list=None):
         tup_list.append(ctx.get(key, None))
     return tuple(tup_list)
 
-class RvPipe_IO_Context_v2:
+class RvPipe_IO_Context_Video_WVW_v2:
     # Node class for passing through a context for general workflows.
     def __init__(self):
         pass
@@ -140,11 +150,11 @@ class RvPipe_IO_Context_v2:
         # Return the updated pipe and all individual values
         return get_context_return_tuple(ctx)
 
-NODE_NAME = 'Context v2 [RvTools-X]'
-NODE_DESC = 'Context v2'
+NODE_NAME = 'Context Video (WVW) v2 [RvTools-X]'
+NODE_DESC = 'Context Video (WVW) v2'
 
 NODE_CLASS_MAPPINGS = {
-    NODE_NAME: RvPipe_IO_Context_v2
+    NODE_NAME: RvPipe_IO_Context_Video_WVW_v2
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {

@@ -20,8 +20,8 @@ class RvPipe_Out_ProjectFolder_Video:
         }
 
     CATEGORY = CATEGORY.MAIN.value + CATEGORY.PIPE.value
-    RETURN_TYPES = ("INT",   "INT",    "FLOAT",      "INT",            "INT",               "INT",              "LATENT", "STRING")
-    RETURN_NAMES = ("width", "height", "frame_rate", "frame_load_cap", "skip_first_frames", "select_every_nth", "latent", "path")
+    RETURN_TYPES = ("INT", "INT", "FLOAT", "INT", ["INT"], ["INT"], "INT", "INT", "LATENT", "STRING")
+    RETURN_NAMES = ("width", "height", "frame_rate", "frame_load_cap", "context_length", "overlap", "skip_first_frames", "select_every_nth", "latent", "path")
     FUNCTION = "execute"
     
     def execute(self, pipe: dict = None) -> tuple:
@@ -31,41 +31,26 @@ class RvPipe_Out_ProjectFolder_Video:
         if not isinstance(pipe, dict):
             raise ValueError("RvPipe_Out_ProjectFolder_Video expects dict-style pipes only.")
 
-        try:
-            width = int(pipe.get("width")) if pipe.get("width") is not None else 0
-        except Exception:
-            width = 0
-        try:
-            height = int(pipe.get("height")) if pipe.get("height") is not None else 0
-        except Exception:
-            height = 0
-        try:
-            frame_rate = float(pipe.get("frame_rate")) if pipe.get("frame_rate") is not None else 30.0
-        except Exception:
-            frame_rate = 30.0
-        try:
-            frame_load_cap = int(pipe.get("frame_load_cap")) if pipe.get("frame_load_cap") is not None else 0
-        except Exception:
-            frame_load_cap = 0
-        try:
-            skip_first_frames = int(pipe.get("skip_first_frames")) if pipe.get("skip_first_frames") is not None else 0
-        except Exception:
-            skip_first_frames = 0
-        try:
-            select_every_nth = int(pipe.get("select_every_nth")) if pipe.get("select_every_nth") is not None else 1
-        except Exception:
-            select_every_nth = 1
-        try:
-            batch_size = int(pipe.get("batch_size")) if pipe.get("batch_size") is not None else 1
-        except Exception:
-            batch_size = 1
-
+        # Extract values - return None for missing keys to maintain compatibility with both V1 and V2
+        width = pipe.get("width")
+        height = pipe.get("height") 
+        frame_rate = pipe.get("frame_rate")
+        frame_load_cap = pipe.get("frame_load_cap")
+        context_length = pipe.get("context_length")  # None if not provided (V1 compatibility)
+        overlap = pipe.get("overlap")  # None if not provided (V1 compatibility)
+        skip_first_frames = pipe.get("skip_first_frames")
+        select_every_nth = pipe.get("select_every_nth")
+        batch_size = pipe.get("batch_size")
         path = pipe.get("path") or ""
 
-        # Generate latent with the given width and height
-        output_latent = self.generate(width, height, batch_size)[0]
+        # Generate latent with defaults if dimensions/batch_size are None
+        latent_width = width if width is not None else 576
+        latent_height = height if height is not None else 1024
+        latent_batch_size = batch_size if batch_size is not None else 1
+        
+        output_latent = self.generate(latent_width, latent_height, latent_batch_size)[0]
 
-        return (width, height, frame_rate, frame_load_cap, skip_first_frames, select_every_nth, output_latent, path)
+        return (width, height, frame_rate, frame_load_cap, context_length, overlap, skip_first_frames, select_every_nth, output_latent, path)
 
     def generate(self, width, height, batch_size=1):
         latent = torch.zeros([batch_size, 4, height // 8, width // 8], device=self.device)

@@ -24,6 +24,9 @@ _all_context_input_output_data = {
     "images_ref_start": ("images_ref_start", "IMAGE", "images_ref_start"),
     "images_ref_end": ("images_ref_end", "IMAGE", "images_ref_end"),
     "images_output": ("images_output", "IMAGE", "images_output"),
+
+
+
     "mask_1": ("mask_1", "MASK", "mask_1"),
     "mask_2": ("mask_2", "MASK", "mask_2"),
     
@@ -45,8 +48,13 @@ _all_context_input_output_data = {
     "select_every_nth": ("select_every_nth", "INT", "select_every_nth"),
     "audio": ("audio", "AUDIO", "audio"),
 
+  
     "any_1": ("any_1", any, "any_1"),
-
+    
+    
+    
+    
+    
     "path": ("path", "STRING", "path"),
 }
 

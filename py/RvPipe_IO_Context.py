@@ -23,6 +23,9 @@ _all_context_input_output_data = {
     "images": ("images", "IMAGE", "images"),
     "mask": ("mask", "MASK", "mask"),
 
+    
+    
+    
     "sampler": ("sampler", any, "sampler"),
     "scheduler": ("scheduler", any, "scheduler"),
     "steps": ("steps", "INT", "steps"),
@@ -36,8 +39,15 @@ _all_context_input_output_data = {
     "batch_size": ("batch_size", "INT", "batch_size"),
 
     "text_pos": ("text_pos", "STRING", "text_pos"),
+    
     "text_neg": ("text_neg", "STRING", "text_neg"),
 
+    
+    
+    
+    
+    
+    
     "model_name": ("model_name", "STRING", "model_name"),
     "vae_name": ("vae_name", "STRING", "vae_name"),
     "lora_names": ("lora_names", "STRING", "lora_names"),

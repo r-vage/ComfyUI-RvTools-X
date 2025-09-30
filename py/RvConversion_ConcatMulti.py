@@ -47,6 +47,18 @@ class RvConversion_ConcatMulti:
         "negative_list"
     }
 
+    def _is_empty_value(self, value) -> bool:
+        """Check if a value should be considered empty/invalid for merging"""
+        if value is None:
+            return True
+        if isinstance(value, str):
+            # Skip 'None' strings, empty strings, and whitespace-only strings
+            return value.strip() in ('', 'None', 'none', 'null', 'NULL')
+        if isinstance(value, (list, tuple)):
+            # Skip empty collections
+            return len(value) == 0
+        return False
+
     def concat(self, inputcount: int = 2, merge_strategy: str = "merge", **kwargs) -> tuple:
         result: Dict[str, Any] = {}
 
@@ -65,7 +77,7 @@ class RvConversion_ConcatMulti:
         def set_value(k, v):
             # helper to set value into result respecting strategy
             if merge_strategy == "preserve":
-                if k in result and result[k] not in (None, ""):
+                if k in result and not self._is_empty_value(result[k]):
                     return
                 result[k] = v
                 return
@@ -95,17 +107,20 @@ class RvConversion_ConcatMulti:
             if pipe is None:
                 continue
 
-            # only accept dict-style pipes (tuples removed by design)
-            if not isinstance(pipe, dict):
+            # Handle both dict-style pipes and tuple-style pipes (from context nodes)
+            if isinstance(pipe, tuple):
+                # Assume first element is the dict (like from context nodes)
+                ctx = pipe[0] if pipe and isinstance(pipe[0], dict) else {}
+            elif isinstance(pipe, dict):
+                ctx = pipe
+            else:
                 raise ValueError(
-                    "RvPipe_ConcatMulti expects dict-style pipes only. Convert tuples to dicts before concatenating."
+                    f"Pipe input pipe_{idx} must be a dict or tuple containing a dict. Got: {type(pipe)}"
                 )
-
-            ctx = pipe
 
             for k, v in ctx.items():
                 # skip None/empty values when merging preserve/overwrite
-                if v is None:
+                if self._is_empty_value(v):
                     continue
 
                 # canonicalize common alias keys to a single repo-wide name

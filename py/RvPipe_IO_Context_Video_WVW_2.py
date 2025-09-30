@@ -23,10 +23,9 @@ _all_context_input_output_data = {
     "images_input": ("images_input", "IMAGE", "images_input"),
     "images_ref_start": ("images_ref_start", "IMAGE", "images_ref_start"),
     "images_ref_end": ("images_ref_end", "IMAGE", "images_ref_end"),
+    "images_1st": ("images_1st", "IMAGE", "images_1st"),
+    "images_loop": ("images_loop", "IMAGE", "images_loop"),
     "images_output": ("images_output", "IMAGE", "images_output"),
-    "images_pp1": ("images_pp1", "IMAGE", "images_pp1"),
-    "images_pp2": ("images_pp2", "IMAGE", "images_pp2"),
-    "images_pp3": ("images_pp3", "IMAGE", "images_pp3"),
     "mask_1": ("mask_1", "MASK", "mask_1"),
     "mask_2": ("mask_2", "MASK", "mask_2"),
     
@@ -48,6 +47,9 @@ _all_context_input_output_data = {
     "overlap": ("overlap", "INT", "overlap"),
     "skip_first_frames": ("skip_first_frames", "INT", "skip_first_frames"),
     "select_every_nth": ("select_every_nth", "INT", "select_every_nth"),
+    "loop_idx": ("loop_idx", "INT", "loop_idx"),
+    "flow_control": ("flow_control", "FLOW_CONTROL", "flow_control"),
+
     "audio_in": ("audio_in", "AUDIO", "audio_in"),
     "audio_out": ("audio_out", "AUDIO", "audio_out"),
 

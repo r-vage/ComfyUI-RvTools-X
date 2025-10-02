@@ -82,7 +82,7 @@ class RvFolders_ProjectFolder_Video:
                 "width": ("INT", {"default": 576, "min": 16, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Video width in pixels (used if Custom or to override preset)."}),
                 "height": ("INT", {"default": 1024, "min": 16, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Video height in pixels (used if Custom or to override preset)."}),
                 "frame_rate": ("FLOAT", {"default": 30.0, "min": 8, "max": 240, "tooltip": "Video frame rate (frames per second)."}),
-                "frame_load_cap": ("INT", {"default": 81, "min": 1, "max": MAX_RESOLUTION, "step": 4, "tooltip": "Maximum frames to load per batch."}),
+                "frame_load_cap": ("INT", {"default": 81, "min": -1, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Maximum frames to load per batch."}),
                 "skip_first_frames": ("INT", {"default": 0, "min": 0, "max": 4096, "tooltip": "Number of initial frames to skip."}),
                 "skip_first_frames_calc": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True, "tooltip": "Additional skip calculation: skip (frame_load_cap * value)."}), 
                 "select_every_nth": ("INT", {"default": 1, "min": 1, "max": 100, "tooltip": "Select every nth frame from input."}),

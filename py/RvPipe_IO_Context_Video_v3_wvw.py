@@ -13,19 +13,25 @@ any = AnyType("*")
 # original code is taken from rgthree context utils
 _all_context_input_output_data = {
     "pipe": ("pipe", "pipe", "context"),
+    "torch_compile_args": ("torch_compile_args", "WANCOMPILEARGS", "torch_compile_args"),
+    "block_swap_args": ("block_swap_args", "BLOCKSWAPARGS", "block_swap_args"),
+    "vram_management_args": ("vram_management_args", "VRAM_MANAGEMENTARGS", "vram_management_args"),    
+
     "model": ("model", "WANVIDEOMODEL", "model"),
     "clip": ("clip", "WANTEXTENCODER", "clip"),
     "vae": ("vae", "WANVAE", "vae"),
-    "positive": ("positive", "CONDITIONING", "positive"),
-    "negative": ("negative", "CONDITIONING", "negative"),
-    "latent": ("latent", "LATENT", "latent"),
-    
+
+    "text_embeds": ("text_embeds", "WANVIDEOTEXTEMBEDS", "text_embeds"),
+    "image_embeds": ("image_embeds", "WANVIDIMAGE_EMBEDS", "image_embeds"),
+
     "images_input": ("images_input", "IMAGE", "images_input"),
     "images_ref_start": ("images_ref_start", "IMAGE", "images_ref_start"),
+    "images_ref_new": ("images_ref_new", "IMAGE", "images_ref_new"),
     "images_ref_end": ("images_ref_end", "IMAGE", "images_ref_end"),
     "images_1st": ("images_1st", "IMAGE", "images_1st"),
     "images_loop": ("images_loop", "IMAGE", "images_loop"),
     "images_output": ("images_output", "IMAGE", "images_output"),
+    
     "mask_1": ("mask_1", "MASK", "mask_1"),
     "mask_2": ("mask_2", "MASK", "mask_2"),
     
@@ -38,31 +44,26 @@ _all_context_input_output_data = {
     "seed": ("seed", "INT", "seed"),
     "width": ("width", "INT", "width"),
     "height": ("height", "INT", "height"),
+
     "text_pos": ("text_pos", "STRING", "text_pos"),
+    "text_i2p": ("text_i2p", "STRING", "text_i2p"),
     "text_neg": ("text_neg", "STRING", "text_neg"),
 
     "frame_rate": ("frame_rate", "FLOAT", "frame_rate"),
     "frame_load_cap": ("frame_load_cap", "INT", "frame_load_cap"),
     "context_length": ("context_length", "INT", "context_length"),
     "overlap": ("overlap", "INT", "overlap"),
+    "blend_factor": ("blend_factor", "FLOAT", "blend_factor"),
     "skip_first_frames": ("skip_first_frames", "INT", "skip_first_frames"),
     "select_every_nth": ("select_every_nth", "INT", "select_every_nth"),
     "loop_idx": ("loop_idx", "INT", "loop_idx"),
     "flow_control": ("flow_control", "FLOW_CONTROL", "flow_control"),
-
-    "audio_in": ("audio_in", "AUDIO", "audio_in"),
-    "audio_out": ("audio_out", "AUDIO", "audio_out"),
-
-    "text_embeds": ("text_embeds", "WANVIDEOTEXTEMBEDS", "text_embeds"),
-    "image_embeds": ("image_embeds", "WANVIDIMAGE_EMBEDS", "image_embeds"),
-    "loras": ("loras", "WANVIDLORA", "loras"),
-    "torch_compile_args": ("torch_compile_args", "WANCOMPILEARGS", "torch_compile_args"),
-    "block_swap_args": ("block_swap_args", "BLOCKSWAPARGS", "block_swap_args"),
-    "vram_management_args": ("vram_management_args", "VRAM_MANAGEMENTARGS", "vram_management_args"),    
+    
+    "audio": ("audio", "AUDIO", "audio"),
 
     "any_1": ("any_1", any, "any_1"),
     "any_2": ("any_2", any, "any_2"),
-
+    
     "path": ("path", "STRING", "path"),
 }
 
@@ -128,7 +129,7 @@ def get_context_return_tuple(ctx, inputs_list=None):
         tup_list.append(ctx.get(key, None))
     return tuple(tup_list)
 
-class RvPipe_IO_Context_Video_WVW_v2:
+class RvPipe_IO_Context_Video_v3_WvW:
     # Node class for passing through a context for general workflows.
     def __init__(self):
         pass
@@ -152,11 +153,11 @@ class RvPipe_IO_Context_Video_WVW_v2:
         # Return the updated pipe and all individual values
         return get_context_return_tuple(ctx)
 
-NODE_NAME = 'Context Video (WVW) v2 [RvTools-X]'
-NODE_DESC = 'Context Video (WVW) v2'
+NODE_NAME = 'Context Video v3 WvW [RvTools-X]'
+NODE_DESC = 'Context Video v3 WvW'
 
 NODE_CLASS_MAPPINGS = {
-    NODE_NAME: RvPipe_IO_Context_Video_WVW_v2
+    NODE_NAME: RvPipe_IO_Context_Video_v3_WvW
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {

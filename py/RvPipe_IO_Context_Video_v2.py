@@ -39,6 +39,7 @@ _all_context_input_output_data = {
     "seed": ("seed", "INT", "seed"),
     "width": ("width", "INT", "width"),
     "height": ("height", "INT", "height"),
+    
     "text_pos": ("text_pos", "STRING", "text_pos"),
     "text_neg": ("text_neg", "STRING", "text_neg"),
 

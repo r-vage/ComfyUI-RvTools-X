@@ -73,7 +73,7 @@ class RvFolders_ProjectFolder_Video:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "project_root_name": ("STRING", {"multiline": False, "default": "vGEN", "tooltip": "Root folder name for the video project."}),
+                "project_root_name": ("STRING", {"multiline": False, "default": "WAN", "tooltip": "Root folder name for the video project."}),
                 "date_time_format": ("STRING", {"multiline": False, "default": "%Y-%m-%d", "tooltip": "Format for date/time (strftime)."}),
                 "add_date_time": (["disable", "prefix", "postfix"], {"default": "postfix", "tooltip": "Add date/time as prefix or postfix to folder name."}),
                 "batch_folder_name": ("STRING", {"multiline": False, "default": "batch_{}", "tooltip": "Batch subfolder name, use {} for batch number."}),                
@@ -82,9 +82,10 @@ class RvFolders_ProjectFolder_Video:
                 "width": ("INT", {"default": 576, "min": 16, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Video width in pixels (used if Custom or to override preset)."}),
                 "height": ("INT", {"default": 1024, "min": 16, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Video height in pixels (used if Custom or to override preset)."}),
                 "frame_rate": ("FLOAT", {"default": 30.0, "min": 8, "max": 240, "tooltip": "Video frame rate (frames per second)."}),
-                "frame_load_cap": ("INT", {"default": 1, "min": 1, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Maximum frames to load per batch."}),
+                "frame_load_cap": ("INT", {"default": 500, "min": -1, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Maximum frames to load per batch."}),
                 "context_length": ("INT", {"default": 51, "min": 1, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Context length for WAN models."}),
-                "overlap": ("INT", {"default": 6, "min": 1, "max": MAX_RESOLUTION, "step": 4, "tooltip": "Overlap Frames between two clips."}),
+                "overlap": ("INT", {"default": 6, "min": 1, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Overlap Frames between two clips."}),
+                "blend_factor": ("FLOAT", {"default": 0.10, "min": 0.0, "max": 1.0, "tooltip": "Blend factor for video frames."}),
                 "skip_first_frames": ("INT", {"default": 0, "min": 0, "max": 4096, "tooltip": "Number of initial frames to skip."}),
                 "skip_first_frames_calc": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True, "tooltip": "Additional skip calculation: skip (frame_load_cap * value)."}), 
                 "select_every_nth": ("INT", {"default": 1, "min": 1, "max": 100, "tooltip": "Select every nth frame from input."}),
@@ -97,7 +98,7 @@ class RvFolders_ProjectFolder_Video:
     RETURN_TYPES = ("pipe",)
     FUNCTION = "execute"
 
-    def execute(self, project_root_name, add_date_time, date_time_format, create_batch_folder, batch_folder_name, frame_rate, frame_load_cap, context_length, overlap, skip_first_frames, select_every_nth, batch_size, resolution, width, height, batch_number, skip_first_frames_calc):
+    def execute(self, project_root_name, add_date_time, date_time_format, create_batch_folder, batch_folder_name, frame_rate, frame_load_cap, context_length, overlap, blend_factor, skip_first_frames, select_every_nth, batch_size, resolution, width, height, batch_number, skip_first_frames_calc):
         # Type safety: ensure valid strings and numbers
         if not isinstance(project_root_name, str) or not project_root_name:
             project_root_name = "vGEN"
@@ -117,6 +118,8 @@ class RvFolders_ProjectFolder_Video:
             skip_first_frames = 0
         if not isinstance(select_every_nth, int):
             select_every_nth = 1
+        if not isinstance(blend_factor, (int, float)):
+            blend_factor = 0.10
         if not isinstance(batch_size, int):
             batch_size = 1
         if not isinstance(batch_number, int):
@@ -140,7 +143,7 @@ class RvFolders_ProjectFolder_Video:
 
         if skipnum > 0:
             try:
-                skip_first_frames = skip_first_frames + (frame_load_cap * skipnum)
+                skip_first_frames += (context_length * skipnum)
             except Exception:
                 skip_first_frames = 0
 
@@ -182,6 +185,7 @@ class RvFolders_ProjectFolder_Video:
             "frame_load_cap": int(frame_load_cap),
             "context_length": int(context_length),
             "overlap": int(overlap),
+            "blend_factor": float(blend_factor),
             "skip_first_frames": int(skip_first_frames),
             "select_every_nth": int(select_every_nth),
             "batch_size": int(batch_size),

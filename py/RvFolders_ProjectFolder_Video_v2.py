@@ -82,9 +82,10 @@ class RvFolders_ProjectFolder_Video:
                 "width": ("INT", {"default": 576, "min": 16, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Video width in pixels (used if Custom or to override preset)."}),
                 "height": ("INT", {"default": 1024, "min": 16, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Video height in pixels (used if Custom or to override preset)."}),
                 "frame_rate": ("FLOAT", {"default": 30.0, "min": 8, "max": 240, "tooltip": "Video frame rate (frames per second)."}),
-                "frame_load_cap": ("INT", {"default": 500, "min": -1, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Maximum frames to load per batch."}),
-                "context_length": ("INT", {"default": 51, "min": 1, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Context length for WAN models."}),
-                "overlap": ("INT", {"default": 6, "min": 1, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Overlap Frames between two clips."}),
+                "frame_load_cap": ("INT", {"default": 162, "min": 0, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Maximum frames to load per batch. Set 0 for no limit."}),
+                "context_length": ("INT", {"default": 81, "min": 1, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Context length for WAN models."}),
+                "loop_count": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Calculates the frame_load_cap by using the context length * loop count. this overrides the frame_load_cap value if > 0."}),
+                "overlap": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Overlap Frames between two clips."}),
                 "blend_factor": ("FLOAT", {"default": 0.10, "min": 0.0, "max": 1.0, "tooltip": "Blend factor for video frames."}),
                 "skip_first_frames": ("INT", {"default": 0, "min": 0, "max": 4096, "tooltip": "Number of initial frames to skip."}),
                 "skip_first_frames_calc": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True, "tooltip": "Additional skip calculation: skip (frame_load_cap * value)."}), 
@@ -98,7 +99,7 @@ class RvFolders_ProjectFolder_Video:
     RETURN_TYPES = ("pipe",)
     FUNCTION = "execute"
 
-    def execute(self, project_root_name, add_date_time, date_time_format, create_batch_folder, batch_folder_name, frame_rate, frame_load_cap, context_length, overlap, blend_factor, skip_first_frames, select_every_nth, batch_size, resolution, width, height, batch_number, skip_first_frames_calc):
+    def execute(self, project_root_name, add_date_time, date_time_format, create_batch_folder, batch_folder_name, frame_rate, frame_load_cap, overlap, context_length, loop_count, blend_factor, skip_first_frames, select_every_nth, batch_size, resolution, width, height, batch_number, skip_first_frames_calc):
         # Type safety: ensure valid strings and numbers
         if not isinstance(project_root_name, str) or not project_root_name:
             project_root_name = "vGEN"
@@ -114,6 +115,8 @@ class RvFolders_ProjectFolder_Video:
             context_length = 53
         if not isinstance(overlap, int):
             overlap = 6
+        if not isinstance(loop_count, int):
+            loop_count = 0
         if not isinstance(skip_first_frames, int):
             skip_first_frames = 0
         if not isinstance(select_every_nth, int):
@@ -140,6 +143,9 @@ class RvFolders_ProjectFolder_Video:
         if create_batch_folder:
             folder_name_parsed = format_variables(batch_folder_name, batchnum)
             new_path = os.path.join(new_path, folder_name_parsed)
+
+        if loop_count > 0:
+            frame_load_cap = context_length * loop_count
 
         if skipnum > 0:
             try:

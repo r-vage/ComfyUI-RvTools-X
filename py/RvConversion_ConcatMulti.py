@@ -16,7 +16,13 @@ class RvConversion_ConcatMulti:
             },
             "optional": {
                 "pipe_2": ("pipe",),
-                "merge_strategy": (["overwrite", "preserve", "merge"], {"default": "merge"}),
+                "merge_strategy": (["overwrite", "preserve", "merge"], {
+                    "default": "merge",
+                    "tooltip": "How to handle conflicting keys:\n"
+                              "'overwrite' replaces earlier values,\n"
+                              "'preserve' keeps first valid values,\n"
+                              "'merge' combines lists and uses later values for conflicts"
+                }),
             },
         }
 

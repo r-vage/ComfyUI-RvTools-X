@@ -20,8 +20,8 @@ class RvPipe_Out_ProjectFolder_Video:
         }
 
     CATEGORY = CATEGORY.MAIN.value + CATEGORY.PIPE.value
-    RETURN_TYPES = ("INT", "INT", "FLOAT", "INT", ["INT"], ["INT"], "INT", "INT", "LATENT", "STRING")
-    RETURN_NAMES = ("width", "height", "frame_rate", "frame_load_cap", "context_length", "overlap", "skip_first_frames", "select_every_nth", "latent", "path")
+    RETURN_TYPES = ("INT", "INT", "FLOAT", "INT", ["INT"], ["INT"], ["FLOAT"], "INT", "INT", "LATENT", "STRING")
+    RETURN_NAMES = ("width", "height", "frame_rate", "frame_load_cap", "context_length", "overlap", "blend_factor", "skip_first_frames", "select_every_nth", "latent", "path")
     FUNCTION = "execute"
     
     def execute(self, pipe: dict = None) -> tuple:
@@ -38,6 +38,7 @@ class RvPipe_Out_ProjectFolder_Video:
         frame_load_cap = pipe.get("frame_load_cap")
         context_length = pipe.get("context_length")  # None if not provided (V1 compatibility)
         overlap = pipe.get("overlap")  # None if not provided (V1 compatibility)
+        blend_factor = pipe.get("blend_factor")  # None if not provided (V1 compatibility)
         skip_first_frames = pipe.get("skip_first_frames")
         select_every_nth = pipe.get("select_every_nth")
         batch_size = pipe.get("batch_size")
@@ -50,7 +51,7 @@ class RvPipe_Out_ProjectFolder_Video:
         
         output_latent = self.generate(latent_width, latent_height, latent_batch_size)[0]
 
-        return (width, height, frame_rate, frame_load_cap, context_length, overlap, skip_first_frames, select_every_nth, output_latent, path)
+        return (width, height, frame_rate, frame_load_cap, context_length, overlap, blend_factor, skip_first_frames, select_every_nth, output_latent, path)
 
     def generate(self, width, height, batch_size=1):
         latent = torch.zeros([batch_size, 4, height // 8, width // 8], device=self.device)

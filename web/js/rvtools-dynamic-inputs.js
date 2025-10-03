@@ -12,7 +12,7 @@ import { app } from "../../../scripts/app.js";
 // - Avoids duplicating sockets when a node already exposes optional inputs as widgets
 
 app.registerExtension({
-    name: "RvTools.DynamicInputs",
+    name: "RvTools-X.DynamicInputs",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         if (!nodeData?.name) return;
 

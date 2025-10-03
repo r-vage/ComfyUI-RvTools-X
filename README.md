@@ -450,8 +450,8 @@ Specialized pipes for different sampling configurations:
 - **Sampler Settings Small:** Basic sampler/scheduler, steps, and CFG.
 - **Sampler Settings (Flux+Seed):** Flux-specific guidance, denoise, and seed.
 - **Sampler Settings Small (Flux):** Compact Flux settings without seed.
-- **Sampler Settings NI (Flux):** No-input Flux settings (all parameters fixed).
-- **Sampler Settings NIS (Flux):** No-input with seed for Flux workflows.
+- **Sampler Settings NI (Flux):** Noise Injection Parameters + Generations settings.
+- **Sampler Settings NIS (Flux):** Noise Injection Parameters + Seed + Generations settings.
 
 ### Key Abilities
 

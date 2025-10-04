@@ -915,6 +915,9 @@ class RvImage_SaveImages:
 
         delimiter = filename_delimiter
 
+        # Store original images tensor for return value
+        original_images_tensor = images
+
         # If no images were passed directly, require the pipe to supply images
         if images is None and pipe_opt is not None:
             # ctx should be set earlier when pipe_opt is processed
@@ -926,6 +929,9 @@ class RvImage_SaveImages:
             # Explicit emptiness checks to avoid ambiguous truthiness on tensors/arrays
             if pipe_images is None:
                 raise RuntimeError("RvImage_SaveImages: pipe_opt provided but contains no 'images' data. Provide images via the 'images' input or include an 'images' key in the pipe.")
+
+            # Store the original tensor for return value
+            original_images_tensor = pipe_images
 
             # Normalize common container types into a list of per-image objects
             if isinstance(pipe_images, torch.Tensor):
@@ -947,9 +953,16 @@ class RvImage_SaveImages:
                 if len(pipe_images) == 0:
                     raise RuntimeError("RvImage_SaveImages: pipe_opt provided but contains no 'images' data. Provide images via the 'images' input or include an 'images' key in the pipe.")
                 images = list(pipe_images)
+                # For lists/tuples, we need to stack them back into a tensor for return
+                try:
+                    original_images_tensor = torch.stack(images) if len(images) > 1 else images[0]
+                except Exception:
+                    # If stacking fails, keep as list but this may cause issues
+                    original_images_tensor = images
             else:
                 # Accept single PIL Image or other single-image objects and wrap into a list
                 images = [pipe_images]
+                original_images_tensor = pipe_images
         
         number_padding = filename_number_padding
         lossless_webp = (lossless_webp == True)
@@ -1132,9 +1145,9 @@ class RvImage_SaveImages:
                 results.append(image_data)
 
         if show_previews == True:
-            return {"ui": {"images": results, "files": output_files}, "result": (images, output_files,)}
+            return {"ui": {"images": results, "files": output_files}, "result": (original_images_tensor, output_files,)}
         else:
-            return {"ui": {"images": []}, "result": (images, output_files,)}
+            return {"ui": {"images": []}, "result": (original_images_tensor, output_files,)}
 
     def get_subfolder_path(self, image_path, output_path):
         output_parts = output_path.strip(os.sep).split(os.sep)

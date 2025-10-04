@@ -25,7 +25,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "co
 from ..core import CATEGORY
 from ..core.common import SCHEDULERS_ANY
 
-#credits to https://github.com/Jordach/comfy-plasma for the initial code, which was modified for this project
+#credits to comfyanonymous for the initial code of the image load node, which was modified for this project
+#credits to https://github.com/Jordach/comfy-plasma for the initial code of the metadata extraction, which was modified for this project
 
 EASYDIFFUSION_MAPPING_A = {
 	"prompt": "Prompt",
